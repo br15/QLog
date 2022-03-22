@@ -84,6 +84,9 @@ namespace qLog
 
             // Wake up the work so that it can shutdown.
             workToDoEvent.Set();
+
+            // Tidy up any empty files if required to.
+            DeleteEmptyLogFile();
         }
 
         // The log file will be written to the same directory that the calling application resides in.
@@ -332,6 +335,15 @@ namespace qLog
             }
         }
 
+        private static void DeleteEmptyLogFile()
+        {
+            // If the current log file is open but has not been written to, delete it. 
+            if (swLogFile != null && logFilesWritten == 0)
+            {
+                swLogFile.Close();
+                File.Delete(logFileName);
+            }
+        }
 
         /// <summary>
         /// This method gets the full caller name (namespace + class name + method name) of one of the Logxxx methods.
