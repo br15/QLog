@@ -55,7 +55,7 @@ namespace qLog
         private static int                  logFilesWritten;
         private static string               currentDay;
         private static int                  currentHour;
-        public enum SwitchLogOptions { NEVER, DAILY, HOURLY, NUMBER_OF_LINES }
+        public enum SwitchLogOptions { NEVER, DAILY, HOURLY, NUMBER_OF_LINES = 4 } // Flags can be ORed together to allow multiple options to be selected.
         public enum Level { DEBUG, VERBOSE, INFO, WARN, ERROR, CRITICAL }
         #endregion
 
@@ -286,7 +286,7 @@ namespace qLog
                     case SwitchLogOptions.NUMBER_OF_LINES:
                         if (linesWritten >= MaximumLinesInLog)
                         {
-                            // We've reached our maximum log file size.
+                            // We've reached our maximum log file size. 
                             switchFile = true;
                         }
                         break;
