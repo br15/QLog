@@ -229,8 +229,8 @@ namespace qLog
                     // Close our current log file so that we may delete it.
                     if (swLogFile != null)
                     {
-                        // Close our log file. We don't need to call flush as it is already called after every write. Calling 
-                        // Close also silently invokes Dispose.
+                        // Close our log file. We don't need to call flush as it is already called after every write.
+                        // Calling 'Close' also silently invokes Dispose.
                         swLogFile.Close();
 
                         // Delete the empty file from disk.
