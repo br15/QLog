@@ -156,23 +156,29 @@ namespace qLog
         private static void QueueMessage(string message, Level logLevel = Level.INFO) 
         {
             // Don't waste our time if we aren't logging this level of message.
-            if (logLevel >= LogLevel)
+            if (logLevel < LogLevel) return;
+
+            // Don't allow empty messages.
+            if (string.IsNullOrWhiteSpace(message)) return;
+            
+            try
             {
-                try
+                lock (logMessageQueue)
                 {
-                    lock (logMessageQueue)
-                    {
-                        // We make a copy of the original message text so that we always log the value at the time of calling not at the time when
-                        // ProcessLogMessageQueue method processes it.
-                        LogMessage msg = new LogMessage(logLevel, ++seqNo, DateTime.Now, Thread.CurrentThread.ManagedThreadId, GetCaller(), string.Copy(message));
-                        logMessageQueue.Enqueue(msg);
-                    }
+                    // We make a copy of the original message text so that we always log the value at the time of calling not at the time when
+                    // ProcessLogMessageQueue method processes it.
+                    LogMessage msg = new LogMessage(logLevel, ++seqNo, DateTime.Now, Thread.CurrentThread.ManagedThreadId, GetCaller(), string.Copy(message));
+                    logMessageQueue.Enqueue(msg);
                 }
-                catch (Exception ex)
-                { }
-                // Tell the worker thread (ProcessLogMessageQueue()) it has work to do.
-                workToDoEvent.Set();
             }
+            catch (Exception)
+            { 
+                // This error can be detected by a gap in the sequence numbers in the log.
+            }
+
+            // Tell the worker thread (ProcessLogMessageQueue()) it has work to do.
+            workToDoEvent.Set();
+            
         }
 
         /// <summary>
