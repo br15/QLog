@@ -66,6 +66,16 @@ namespace qLog
         {
             // To speed things up, our I/O is performed on a separate thread.
             CreateMessageProcessingThread();
+
+            // Our queue processing thread, created by the call to "CreateMessageProcessingThread" creates a foreground thread. This thread; if not terminated will
+            // prevent the managed execution environment from terminating. If the user wants to stop logging before the main thread has terminated, they need to
+            // call the Shutdown method manually.
+            AppDomain.CurrentDomain.ProcessExit += CallerTerminating;
+        }
+
+        private static void CallerTerminating(object sender, EventArgs e)
+        {
+            Shutdown();
         }
 
         #region Public API.
@@ -76,9 +86,12 @@ namespace qLog
         // Set the default log level.
         public static Level LogLevel { get; set; } = Level.INFO;
 
-        // Please note that the user application won't shutdown cleanly unless "Shutdown" is called to terminate the worker thread of qLog.
+        // This method is called automatically when the main thread is terminating.
         public static void Shutdown()
         {
+            // We should only do this once.
+            if (shutdown) return;
+
             // Indicate that we are about to shutdown. 
             shutdown = true;
 
@@ -134,7 +147,8 @@ namespace qLog
             // Start the message processing method on its own thread.
             worker      = new Thread(ProcessLogMessageQueue);
             worker.Name = "qLog Worker";
-            //worker.IsBackground = true; 
+            
+            // The worker thread will run as a foreground thread. This will prevent the main thread from terminating until the worker is stopped. 
             worker.Start();
         }
 
