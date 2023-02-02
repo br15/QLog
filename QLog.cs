@@ -55,6 +55,10 @@ namespace qLog
         private static int                  logFilesWritten;
         private static string               currentDay;
         private static int                  currentHour;
+
+        // 
+        private const char CarriageReturn = '\n';
+        private const char LineFeed = '\r';
         public enum SwitchLogOptions { NEVER, DAILY, HOURLY, NUMBER_OF_LINES = 4 } // Flags can be ORed together to allow multiple options to be selected.
         public enum Level { DEBUG, VERBOSE, INFO, WARN, ERROR, CRITICAL }
         #endregion
@@ -181,7 +185,7 @@ namespace qLog
                 {
                     // We make a copy of the original message text so that we always log the value at the time of calling not at the time when
                     // ProcessLogMessageQueue method processes it.
-                    LogMessage msg = new LogMessage(logLevel, ++seqNo, DateTime.Now, Thread.CurrentThread.ManagedThreadId, GetCaller(), string.Copy(message));
+                    LogMessage msg = new LogMessage(logLevel, ++seqNo, DateTime.Now, Thread.CurrentThread.ManagedThreadId, GetCaller(), string.Copy(RemoveCrLf(message)));
                     logMessageQueue.Enqueue(msg);
                 }
             }
@@ -193,6 +197,15 @@ namespace qLog
             // Tell the worker thread (ProcessLogMessageQueue()) it has work to do.
             workToDoEvent.Set();
             
+        }
+
+        private static string RemoveCrLf(string message)
+        {
+            // Keep each message on a single line.
+            message = message.Replace(CarriageReturn, ' ');
+            message = message.Replace(LineFeed, ' ');
+
+            return message;
         }
 
         /// <summary>
