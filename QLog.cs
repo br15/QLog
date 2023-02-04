@@ -27,34 +27,34 @@ namespace qLog
 
         #region Private data members.
         // The log message queue which is processed by the ProcessLogMessageQueue method. This method runs on its own thread.
-        private static Queue<LogMessage>    logMessageQueue = new Queue<LogMessage>();
+        private static Queue<LogMessage> logMessageQueue = new Queue<LogMessage>();
 
         // Used to tell ProcessLogMessageQueue method that it has work to do or that we are shutting down.
-        private static AutoResetEvent       workToDoEvent = new AutoResetEvent(false);
-        private static Thread               worker;
+        private static AutoResetEvent workToDoEvent = new AutoResetEvent(false);
+        private static Thread worker;
 
         // This is used by the worker thread to write messages to out log file.
-        private static StreamWriter         swLogFile;
+        private static StreamWriter swLogFile;
 
         // Get the machine name, application name and process id once here so we never have to again. Use to generate a log file name.
-        private static readonly string      machineName      = Environment.MachineName;
-        private static readonly string      processId        = Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture);
-        private static readonly string      applicationName  = GetApplicationName();
+        private static readonly string machineName = Environment.MachineName;
+        private static readonly string processId = Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture);
+        private static readonly string applicationName = GetApplicationName();
 
         // Every entry in the log file gets its own sequence number.  A simple way to see if any messages are missing.
-        private static int                  seqNo;
+        private static int seqNo;
 
         // The unique name of our current log file.
-        private static string               logFileName;
+        private static string logFileName;
 
         // This flag is used to tell the worker thread to shutdown.
         private static bool shutdown;
 
         // File switching related data.
-        private static int                  linesWritten;
-        private static int                  logFilesWritten;
-        private static string               currentDay;
-        private static int                  currentHour;
+        private static int linesWritten;
+        private static int logFilesWritten;
+        private static string currentDay;
+        private static int currentHour;
 
         // 
         private const char CarriageReturn = '\n';
@@ -135,11 +135,11 @@ namespace qLog
         #endregion Properties.
 
         #region Message logging methods.
-        public static void Debug(string msg)    { QueueMessage(msg, Level.DEBUG); }
-        public static void Verbose(string msg)  { QueueMessage(msg, Level.VERBOSE); }
-        public static void Info(string msg)     { QueueMessage(msg, Level.INFO); }
-        public static void Warn(string msg)     { QueueMessage(msg, Level.WARN); }
-        public static void Error(string msg)    { QueueMessage(msg, Level.ERROR); }
+        public static void Debug(string msg) { QueueMessage(msg, Level.DEBUG); }
+        public static void Verbose(string msg) { QueueMessage(msg, Level.VERBOSE); }
+        public static void Info(string msg) { QueueMessage(msg, Level.INFO); }
+        public static void Warn(string msg) { QueueMessage(msg, Level.WARN); }
+        public static void Error(string msg) { QueueMessage(msg, Level.ERROR); }
         public static void Critical(string msg) { QueueMessage(msg, Level.CRITICAL); }
         #endregion
 
@@ -149,9 +149,9 @@ namespace qLog
         private static void CreateMessageProcessingThread()
         {
             // Start the message processing method on its own thread.
-            worker      = new Thread(ProcessLogMessageQueue);
+            worker = new Thread(ProcessLogMessageQueue);
             worker.Name = "qLog Worker";
-            
+
             // The worker thread will run as a foreground thread. This will prevent the main thread from terminating until the worker is stopped. 
             worker.Start();
         }
@@ -171,14 +171,14 @@ namespace qLog
         {
             return $@"{destinationDirectory}\{machineName}_{applicationName}_{processId}_{DateTime.Now.ToString("yyyy'-'MM'-'dd'_'HH'-'mm'-'ss")}_Seg{logFilesWritten}.qlog";
         }
-        private static void QueueMessage(string message, Level logLevel = Level.INFO) 
+        private static void QueueMessage(string message, Level logLevel = Level.INFO)
         {
             // Don't waste our time if we aren't logging this level of message.
             if (logLevel < LogLevel) return;
 
             // Don't allow empty messages.
             if (string.IsNullOrWhiteSpace(message)) return;
-            
+
             try
             {
                 lock (logMessageQueue)
@@ -190,13 +190,13 @@ namespace qLog
                 }
             }
             catch (Exception)
-            { 
+            {
                 // This error can be detected by a gap in the sequence numbers in the log.
             }
 
             // Tell the worker thread (ProcessLogMessageQueue()) it has work to do.
             workToDoEvent.Set();
-            
+
         }
 
         private static string RemoveCrLf(string message)
@@ -234,7 +234,7 @@ namespace qLog
                             lock (logMessageQueue)
                             {
                                 // Get a message from the queue to write to the current log file.
-                                 message = logMessageQueue.Dequeue();
+                                message = logMessageQueue.Dequeue();
                             }
 
                             // Write our message to the log file. Test show that when we are very stressed WriteLineAsync is actually much slower.
@@ -272,7 +272,7 @@ namespace qLog
                 }
                 catch (Exception)
                 {
-                   // This allows us to at least set a breakpoint in-case something bad happens.
+                    // This allows us to at least set a breakpoint in-case something bad happens.
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace qLog
             // Force the creation of the log file if this is the first time this method has been called.
             bool switchFile = swLogFile == null;
 
-            DateTime dt     = DateTime.Now;
+            DateTime dt = DateTime.Now;
 
 
             try
@@ -292,16 +292,16 @@ namespace qLog
                 switch (SwitchLog)
                 {
                     // Never switch from the original log file. Everything in one file.
-                    case SwitchLogOptions.NEVER:  
+                    case SwitchLogOptions.NEVER:
                         break;
-                    
+
                     // Create a new log file each day. 
                     case SwitchLogOptions.DAILY:
                         if (currentDay != dt.DayOfWeek.ToString())
                         {
                             // The day has changed. Save the new day name.
                             currentDay = dt.DayOfWeek.ToString();
-                            switchFile = true; 
+                            switchFile = true;
                         }
                         break;
 
@@ -333,7 +333,7 @@ namespace qLog
                 {
                     // Close our current log file if we have one. This might be the first time through. 
                     if (swLogFile != null) swLogFile.Close();
-                    
+
                     // Create a new log file.
                     CreateLogFile();
                 }
@@ -399,11 +399,11 @@ namespace qLog
 
             try
             {
-                StackTrace stackTrace       = new StackTrace();
-                StackFrame stackFrame       = stackTrace.GetFrame(3);
+                StackTrace stackTrace = new StackTrace();
+                StackFrame stackFrame = stackTrace.GetFrame(3);
                 MethodBase stackFrameMethod = stackFrame.GetMethod();
-                typeName                    = stackFrameMethod.ReflectedType.FullName;
-                caller                      = $"{typeName}.{stackFrameMethod.Name}";
+                typeName = stackFrameMethod.ReflectedType.FullName;
+                caller = $"{typeName}.{stackFrameMethod.Name}";
             }
             catch
             {
@@ -417,23 +417,23 @@ namespace qLog
     }
 
     public struct LogMessage
-    {   
-        public DateTime         timestamp;
-        public int              threadId;
-        public Log.Level        logLevel;
-        public string           caller;
-        public string           message;
-        public long             seqNo;
+    {
+        public DateTime timestamp;
+        public int threadId;
+        public Log.Level logLevel;
+        public string caller;
+        public string message;
+        public long seqNo;
 
-        public LogMessage(Log.Level logLevel, long seqNo, DateTime timestamp, int threadId,  string caller, string message)
+        public LogMessage(Log.Level logLevel, long seqNo, DateTime timestamp, int threadId, string caller, string message)
         {
-            this.logLevel   = logLevel;
-            this.seqNo      = seqNo;
-            this.timestamp  = timestamp;
-            this.threadId   = threadId;
-            this.caller     = caller;
-            this.message    = message;
-            
+            this.logLevel = logLevel;
+            this.seqNo = seqNo;
+            this.timestamp = timestamp;
+            this.threadId = threadId;
+            this.caller = caller;
+            this.message = message;
+
         }
 
         public override string ToString()
