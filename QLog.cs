@@ -128,7 +128,7 @@ namespace qLog
                 catch
                 {
                     // Not possible to report this error as we don't have a log to write to.
-                    throw new Exception(string.Format($"qLog could not create its log file directory: {value}"));
+                    throw new Exception($"qLog could not create its log file directory: {value}");
                 }
             }
         }
@@ -344,7 +344,7 @@ namespace qLog
             }
         }
 
-        private static void CreateLogFile(int bufferSizeInMB = 10)
+        private static void CreateLogFile(int bufferSizeInMB = 50)
         {
             int MB = 1024 * 1024;
 
