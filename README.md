@@ -29,7 +29,7 @@ will be contiguous through all the files.
 
 Here's a sample of the output as displayed in our associated QView application:
 
-![test](https://github.com/br15/QLog/blob/master/QViewScreenshot.png?raw=true)
+![QView in action](https://github.com/br15/QLog/blob/master/QViewScreenshot.png?raw=true)
 
 ## Settings
 As mentioned earlier, qLog will work straight out of the box with no need to provide any runtime parameters. However, if you do want to override the default settings,
