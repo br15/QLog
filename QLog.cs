@@ -56,11 +56,17 @@ namespace qLog
         private static string currentDay;
         private static int currentHour;
 
-        // 
+        // Use to test for end of record.
         private const char CarriageReturn = '\n';
         private const char LineFeed = '\r';
-        public enum SwitchLogOptions { NEVER, DAILY, HOURLY, NUMBER_OF_LINES = 4 } // Flags can be ORed together to allow multiple options to be selected.
-        public enum Level { DEBUG, VERBOSE, INFO, WARN, ERROR, CRITICAL }
+        
+        // When do you want to switch to a new log file?
+        // Note: DAILY switches at midnight, HOURLY switches on the hour.
+        public enum SwitchLogOptions { NEVER, DAILY, HOURLY, NUMBER_OF_LINES = 4, NUMBER_OF_LINES_OR_DAILY = NUMBER_OF_LINES + DAILY, NUMBER_OF_LINES_OR_HOURLY = NUMBER_OF_LINES + HOURLY }
+
+        // The level of message that will be written to the log. For example, if the user specifies a level of WARN, only WARN messages and 
+        // above (ERROR, CRITICAL) will be written to the log. If the user specifies OFF, no messages will be logged.
+        public enum Level { DEBUG, VERBOSE, INFO, WARN, ERROR, CRITICAL, OFF }
         #endregion
 
         /// <summary>
@@ -282,12 +288,11 @@ namespace qLog
             // Force the creation of the log file if this is the first time this method has been called.
             bool switchFile = swLogFile == null;
 
+            // Get the current time.
             DateTime dt = DateTime.Now;
-
 
             try
             {
-
                 // Have any of our switch conditions been met?
                 switch (SwitchLog)
                 {
@@ -320,6 +325,34 @@ namespace qLog
                         if (linesWritten >= MaximumLinesInLog)
                         {
                             // We've reached our maximum log file size. 
+                            switchFile = true;
+                        }
+                        break;
+
+                    // Create a new log file as soon as it reaches the specified size limit or if the day has changed.
+                    case SwitchLogOptions.NUMBER_OF_LINES_OR_DAILY:
+                        if (linesWritten >= MaximumLinesInLog || currentDay != dt.DayOfWeek.ToString())
+                        {
+                            // We've reached our maximum log file size or it's a new day. 
+                            if (currentDay != dt.DayOfWeek.ToString())
+                            {
+                                // The day has changed. Save the new day name.
+                                currentDay = dt.DayOfWeek.ToString();
+                            }
+                                switchFile = true;
+                        }
+                        break;
+
+                    // Create a new log file as soon as it reaches the specified size limit or if the hour has changed.
+                    case SwitchLogOptions.NUMBER_OF_LINES_OR_HOURLY:
+                        if (linesWritten >= MaximumLinesInLog || currentHour != dt.Hour)
+                        {
+                            // We've reached our maximum log file size or the hour has changed. 
+                            if (currentHour != dt.Hour)
+                            {
+                                // The hour has changed. Save the new hour.
+                                currentHour = dt.Hour;
+                            }
                             switchFile = true;
                         }
                         break;

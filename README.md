@@ -41,9 +41,12 @@ This property allows you to control if and when the log file will be segmented (
 + **_SwitchLogOptions.DAILY_** The log will be closed at midnight and a new log file will be created.
 + **_SwitchLogOptions.HOURLY_** The log will be closed on the hour and a new log file will be created. 
 + **_SwitchLogOptions.NUMBER_OF_LINES_** The log file will be closed when the specified number of messages has been written to the log file and a new log file will be created.
++ **_SwitchLogOptions.NUMBER_OF_LINES_OR_DAILY_** The log file will be closed when the specified number of messages has been written to the log or when the day has changed. A new log file will be created.
++ **_SwitchLogOptions.NUMBER_OF_LINES_OR_HOURLY_** The log file will be closed when the specified number of messages has been written to the log or the hour has changed. A new log file will be created.
 
 ### Level
 Level determines the type of messages that will be written to the log file. The message levels are as follows:
++ **_Level.OFF_** No messages will be written to the log file.
 + **_Level.CRITICAL_** Only messages from Log.Critical() will be written to the log file.
 + **_Level.ERROR_** Only messages from Log.Error() and above (Critical) will be written to the log file.
 + **_Level.WARN_** Only messages from Log.Warn() and above (Critical and Error) will be written to the log file.
