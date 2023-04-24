@@ -440,7 +440,7 @@ namespace qLog
             }
             catch
             {
-                caller = "We failed to locate caller.";
+                caller = "QLog failed to locate caller.";
             }
 
             return caller;
