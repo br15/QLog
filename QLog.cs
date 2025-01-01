@@ -94,7 +94,7 @@ namespace qLog
         public static SwitchLogOptions SwitchLog { get; set; } = SwitchLogOptions.NEVER;
 
         // Set the default log level.
-        public static Level LogLevel { get; set; } = Level.INFO;
+        public static Level LogLevel { get; set; } = Level.WARN;
 
         // This method is called automatically when the main thread is terminating.
         public static void Shutdown()
