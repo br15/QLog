@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("qLog")]
+[assembly: AssemblyTitle("QLog")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("BR15")]
-[assembly: AssemblyProduct("qLog")]
-[assembly: AssemblyCopyright("Copyright © 2023 Keith Balaam. All rights reserved.")]
+[assembly: AssemblyProduct("QLog")]
+[assembly: AssemblyCopyright("Copyright © 2023-2026 Keith Balaam. All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

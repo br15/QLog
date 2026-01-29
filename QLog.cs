@@ -6,7 +6,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 
-namespace qLog
+namespace QLog
 {
     /// <summary>
     /// This library provides a fast and light weight application wide logging facility in a multi-threaded environment. qLog is itself a 
